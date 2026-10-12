@@ -1,0 +1,67 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
+      MONGO_URI: ${MONGO_URI:-mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongo:27017/?authSource=admin}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in the root .env file}
+      JWT_EXPIRE: ${JWT_EXPIRE:-1d}
+      COOKIE_EXPIRE: ${COOKIE_EXPIRE:-1}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      CLOUDINARY_CLIENT_NAME: ${CLOUDINARY_CLIENT_NAME:-}
+      CLOUDINARY_CLIENT_API: ${CLOUDINARY_CLIENT_API:-}
+      CLOUDINARY_CLIENT_SECRET: ${CLOUDINARY_CLIENT_SECRET:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    expose:
+      - "4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api/v1
+    restart: unless-stopped
+    environment:
+      BACKEND_HOST: backend
+      NGINX_RESOLVER: 127.0.0.11
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?Set MONGO_ROOT_USERNAME in the root .env file}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in the root .env file}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mongo_data:

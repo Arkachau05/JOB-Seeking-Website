@@ -1,29 +1,33 @@
-import React, { useContext } from "react";
-import { Context } from "../../main";
-import { Link } from "react-router-dom";
-import { FaFacebookF, FaYoutube, FaLinkedin, FaGithub } from "react-icons/fa";
-import { RiInstagramFill } from "react-icons/ri";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
+import { Link, useLocation } from "react-router-dom";
 
 const Footer = () => {
-  const { isAuthorized } = useContext(Context);
+  const { pathname } = useLocation();
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+
   return (
-    <footer className={isAuthorized ? "footerShow" : "footerHide"}>
-      <div>&copy; All Rights Reserved By Arkadyuti Chaudhuri.</div>
-      <div>
-        <Link to={"#"} target="_blank">
-          <FaFacebookF />
-        </Link>
-        <Link to={"#"} target="_blank">
-          <FaYoutube />
-        </Link>
-        <Link to={"https://www.linkedin.com/in/arkadyuti-chaudhuri/"} target="_blank">
-          <FaLinkedin />
-        </Link>
-        <Link to={"https://github.com/Arkachau05"} target="_blank">
-          <FaGithub />
-        </Link>
-  
-      </div>
+    <footer className="site-footer">
+      <span>© {new Date().getFullYear()} LookJobber. Building your future.</span>
+      <nav className="footer-links" aria-label="Footer navigation">
+        <Link to="/job/getall">Explore jobs</Link>
+        {!isAuthPage && <Link to="/register">Create an account</Link>}
+        <a
+          href="https://www.linkedin.com/in/arkadyuti-chaudhuri/"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="LinkedIn profile"
+        >
+          <FaLinkedinIn aria-hidden="true" />
+        </a>
+        <a
+          href="https://github.com/Arkachau05"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="GitHub profile"
+        >
+          <FaGithub aria-hidden="true" />
+        </a>
+      </nav>
     </footer>
   );
 };

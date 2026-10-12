@@ -48,6 +48,9 @@ export const logout = catchAsyncErrors(async (req, res, next) => {
     .status(201)
     .cookie("token", "", {
       httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.COOKIE_SECURE === "true",
+      path: "/",
       expires: new Date(Date.now()),
     })
     .json({

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { FaRegUser } from "react-icons/fa";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLock2Fill } from "react-icons/ri";
@@ -8,6 +8,7 @@ import { Link, Navigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Context } from "../../main";
+import { apiUrl } from "../../lib/api";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -16,13 +17,13 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
 
-  const { isAuthorized, setIsAuthorized, user, setUser } = useContext(Context);
+  const { isAuthorized, setIsAuthorized } = useContext(Context);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/api/v1/user/register",
+        apiUrl("/user/register"),
         { name, phone, email, role, password },
         {
           headers: {
@@ -39,7 +40,10 @@ const Register = () => {
       setRole("");
       setIsAuthorized(true);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error?.response?.data?.message ||
+          "Unable to create your account. Please try again."
+      );
     }
   };
 
@@ -53,14 +57,18 @@ const Register = () => {
       <section className="authPage">
         <div className="container">
           <div className="header">
-            <img src="/JobZeelogo.png" alt="logo" />
-            <h3>Create a new account</h3>
+            <h3>Start your next chapter</h3>
           </div>
-          <form>
+          <form onSubmit={handleRegister}>
             <div className="inputTag">
-              <label>Register As</label>
+              <label htmlFor="register-role">I am joining as</label>
               <div>
-                <select value={role} onChange={(e) => setRole(e.target.value)}>
+                <select
+                  id="register-role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
                   <option value="">Select Role</option>
                   <option value="Employer">Employer</option>
                   <option value="Job Seeker">Job Seeker</option>
@@ -69,61 +77,77 @@ const Register = () => {
               </div>
             </div>
             <div className="inputTag">
-              <label>Name</label>
+              <label htmlFor="register-name">Full name</label>
               <div>
                 <input
+                  id="register-name"
                   type="text"
-                  placeholder="Zeeshan"
+                  placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  required
                 />
                 <FaPencilAlt />
               </div>
             </div>
             <div className="inputTag">
-              <label>Email Address</label>
+              <label htmlFor="register-email">Email address</label>
               <div>
                 <input
+                  id="register-email"
                   type="email"
-                  placeholder="zk@gmail.com"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
                 />
                 <MdOutlineMailOutline />
               </div>
             </div>
             <div className="inputTag">
-              <label>Phone Number</label>
+              <label htmlFor="register-phone">Phone number</label>
               <div>
                 <input
-                  type="number"
-                  placeholder="12345678"
+                  id="register-phone"
+                  type="tel"
+                  placeholder="Your phone number"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  autoComplete="tel"
+                  required
                 />
                 <FaPhoneFlip />
               </div>
             </div>
             <div className="inputTag">
-              <label>Password</label>
+              <label htmlFor="register-password">Password</label>
               <div>
                 <input
+                  id="register-password"
                   type="password"
-                  placeholder="Your Password"
+                  placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
                 />
                 <RiLock2Fill />
               </div>
             </div>
-            <button type="submit" onClick={handleRegister}>
+            <button type="submit">
               Register
             </button>
-            <Link to={"/login"}>Login Now</Link>
+            <Link to="/login">Already have an account? Log in</Link>
           </form>
         </div>
         <div className="banner">
-          <img src="/register.png" alt="login" />
+          <div className="banner-copy">
+            <p>A good place to begin</p>
+            <h2>Make room for what’s next.</h2>
+          </div>
         </div>
       </section>
     </>

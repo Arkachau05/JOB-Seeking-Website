@@ -1,11 +1,12 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { MdOutlineMailOutline } from "react-icons/md";
 import { RiLock2Fill } from "react-icons/ri";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { FaRegUser } from "react-icons/fa";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Context } from "../../main";
+import { apiUrl } from "../../lib/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/api/v1/user/login",
+        apiUrl("/user/login"),
         { email, password, role },
         {
           headers: {
@@ -33,7 +34,9 @@ const Login = () => {
       setRole("");
       setIsAuthorized(true);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(
+        error?.response?.data?.message || "Unable to log in. Please try again."
+      );
     }
   };
 
@@ -46,14 +49,18 @@ const Login = () => {
       <section className="authPage">
         <div className="container">
           <div className="header">
-            <img src="/JobZeelogo.png" alt="logo" />
-            <h3>Login to your account</h3>
+            <h3>Welcome back</h3>
           </div>
-          <form>
+          <form onSubmit={handleLogin}>
             <div className="inputTag">
-              <label>Login As</label>
+              <label htmlFor="login-role">Login as</label>
               <div>
-                <select value={role} onChange={(e) => setRole(e.target.value)}>
+                <select
+                  id="login-role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
                   <option value="">Select Role</option>
                   <option value="Employer">Employer</option>
                   <option value="Job Seeker">Job Seeker</option>
@@ -62,37 +69,45 @@ const Login = () => {
               </div>
             </div>
             <div className="inputTag">
-              <label>Email Address</label>
+              <label htmlFor="login-email">Email address</label>
               <div>
                 <input
+                  id="login-email"
                   type="email"
-                  placeholder="zk@gmail.com"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
                 />
                 <MdOutlineMailOutline />
               </div>
             </div>
             <div className="inputTag">
-              <label>Password</label>
+              <label htmlFor="login-password">Password</label>
               <div>
                 <input
+                  id="login-password"
                   type="password"
-                  placeholder="Your Password"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
                 />
                 <RiLock2Fill />
               </div>
             </div>
-            <button type="submit" onClick={handleLogin}>
+            <button type="submit">
               Login
             </button>
-            <Link to={"/register"}>Register Now</Link>
           </form>
         </div>
         <div className="banner">
-          <img src="/login.png" alt="login" />
+          <div className="banner-copy">
+            <p>Your next chapter</p>
+            <h2>Good to have you back.</h2>
+          </div>
         </div>
       </section>
     </>

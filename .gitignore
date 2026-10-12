@@ -1,0 +1,15 @@
+# Dependencies and generated build output
+**/node_modules/
+**/dist/
+**/build/
+
+# Local environment configuration and secrets
+.env
+.env.*
+!.env.example
+backend/config/config.env
+
+# Local certificates and editor/OS files
+*.pem
+.DS_Store
+Thumbs.db

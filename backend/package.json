@@ -11,8 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
-    "cloudinary": "^1.41.2",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.11.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -20,7 +20,9 @@
     "express-fileupload": "^1.4.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
-    "nodemon": "^3.1.0",
     "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import "./App.css";
 import { Context } from "./main";
+import { apiUrl } from "./lib/api";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
@@ -16,6 +17,7 @@ import MyApplications from "./components/Application/MyApplications";
 import PostJob from "./components/Job/PostJob";
 import NotFound from "./components/NotFound/NotFound";
 import MyJobs from "./components/Job/MyJobs";
+import Chatbot from "./components/Chatbot/Chatbot";
 
 const App = () => {
   const { isAuthorized, setIsAuthorized, setUser } = useContext(Context);
@@ -23,7 +25,7 @@ const App = () => {
     const fetchUser = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4000/api/v1/user/getuser",
+          apiUrl("/user/getuser"),
           {
             withCredentials: true,
           }
@@ -35,7 +37,7 @@ const App = () => {
       }
     };
     fetchUser();
-  }, [isAuthorized]);
+  }, [isAuthorized, setIsAuthorized, setUser]);
 
   return (
     <>
@@ -53,8 +55,25 @@ const App = () => {
           <Route path="/job/me" element={<MyJobs />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Chatbot />
         <Footer />
-        <Toaster />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              border: "1px solid #eee7e7",
+              borderRadius: "10px",
+              color: "#211b1b",
+              fontSize: "14px",
+            },
+            success: {
+              iconTheme: {
+                primary: "#c82735",
+                secondary: "#fff",
+              },
+            },
+          }}
+        />
       </BrowserRouter>
     </>
   );

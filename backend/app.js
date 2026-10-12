@@ -8,6 +8,7 @@ import cors from "cors";
 import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
+import mongoose from "mongoose";
 
 const app = express();
 config({ path: "./config/config.env" });
@@ -23,6 +24,14 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get("/health", (_req, res) => {
+  const databaseReady = mongoose.connection.readyState === 1;
+  res.status(databaseReady ? 200 : 503).json({
+    status: databaseReady ? "ok" : "waiting",
+    database: databaseReady ? "connected" : "disconnected",
+  });
+});
 
 app.use(
   fileUpload({
