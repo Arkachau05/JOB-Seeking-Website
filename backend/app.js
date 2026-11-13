@@ -9,9 +9,13 @@ import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 import mongoose from "mongoose";
+import os from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const app = express();
-config({ path: "./config/config.env" });
+const backendDirectory = dirname(fileURLToPath(import.meta.url));
+config({ path: join(backendDirectory, "config", "config.env") });
 
 app.use(
   cors({
@@ -36,7 +40,7 @@ app.get("/health", (_req, res) => {
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: "/tmp/",
+    tempFileDir: os.tmpdir(),
   })
 );
 app.use("/api/v1/user", userRouter);
